@@ -1,5 +1,3 @@
-import { ObjectId } from "mongodb";
-
 export interface GoogleProfile {
     provider: 'google';
     id: string;
@@ -26,7 +24,6 @@ export interface GoogleProfile {
     coverPhoto?: string;
   }
   export interface AuthenticatedUser extends GoogleProfile {
-    _id:ObjectId
     refreshTokenVersion: number;
     username:string
   }

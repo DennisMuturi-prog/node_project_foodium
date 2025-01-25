@@ -4,15 +4,17 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev2": "ts-node-dev --poll ./src/main.ts",
+    "dev":"npx tsx watch --no-emit  ./src/main.ts",
+    "build": "rimraf ./dist && tsc",
+    "start": "npm run build && node dist/index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@types/passport": "^1.0.17",
-    "@types/passport-google-oauth20": "^2.0.16",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
@@ -28,6 +30,10 @@
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.8",
     "@types/node": "^22.10.10",
+    "@types/passport": "^1.0.17",
+    "@types/passport-google-oauth20": "^2.0.16",
+    "rimraf": "^6.0.1",
+    "ts-node-dev": "^2.0.0",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3"
   }

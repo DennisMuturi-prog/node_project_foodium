@@ -1,7 +1,7 @@
 
 import {RequestHandler} from 'express'
 import { checkAccessToken,checkRefreshToken, createAuthTokens } from "../auth/AuthTokens.js";
-import * as bcrypt from "bcrypt";
+import bcrypt from "bcrypt";
 import { addFoodIntake,findUserReviews ,findUserRatings,findUserRecipeIntake, addRating, addRecipeIntake, addReview, checkIfPasswordUserExists, checkUsernameAvailability, findRecipeReviews, findUserFoodIntake, getPaginatedRecipes, Rating, registerPasswordUser, Review, updateOauthUserUsername } from "../sqlDB/mysqlDB.js";
 
 interface CheckAuthRequestBody{
@@ -489,7 +489,6 @@ export const checkAuthentication:RequestHandler=async (req,res,next)=>{
         return;
     }
     const userData=checkAccessToken(tokens.accessToken)
-    console.log('user data:',userData)
     if(userData=='unauthorized'){
       const refreshedUser=await checkRefreshToken(tokens.refreshToken)
       if(refreshedUser=='unauthorized'){
@@ -504,7 +503,6 @@ export const checkAuthentication:RequestHandler=async (req,res,next)=>{
     }
     else{
       req.userId=userData.userId
-      console.log(userData)
       return next()
     }
 

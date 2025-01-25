@@ -1,7 +1,13 @@
 import {createConnection,PoolOptions} from 'mysql2/promise';
 import {readFileSync} from 'fs'
 import { config } from 'dotenv';
+import { resolve } from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 config()
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const dbconfig:PoolOptions =
 {
@@ -10,7 +16,7 @@ const dbconfig:PoolOptions =
     password: process.env.AZURE_PASSWWORD,
     database: process.env.AZURE_DB,
     port: 3306,
-    ssl: {ca: readFileSync("DigiCertGlobalRootCA.crt.pem")}
+    ssl: {ca: readFileSync(resolve(__dirname,"DigiCertGlobalRootCA.crt.pem"))}
 };
 const connection=await createConnection(dbconfig)
 

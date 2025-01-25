@@ -61,7 +61,6 @@ export const checkRefreshToken=async (refreshToken:string)=>{
 
     // 2. get user
     let user = await retrieveUser(data.userId)
-    console.log(user)
     
     // 3.check refresh token version
     if (!user || user.refreshTokenVersion !== data.refreshTokenVersion) {
