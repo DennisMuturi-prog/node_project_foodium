@@ -6,7 +6,6 @@ dotenv.config()
 
 const clientID = process.env.GOOGLE_CLIENT_ID || '';
 const clientSecret = process.env.GOOGLE_CLIENT_SECRET|| '';
-console.log(clientID)
 
 passport.use(new GoogleStrategy({
     clientID: clientID,
