@@ -162,7 +162,7 @@ export async function addRecipeIntake(recipeIntake:RecipeIntake){
     return results
 }
 export async function addFoodIntake(recipeIntake:foodIntake){
-    const [results] = await connection.query(`CALL 'add_food_intake(?,?)`,[recipeIntake.userId,recipeIntake.foodId]);
+    const [results] = await connection.query(`CALL add_food_intake(?,?)`,[recipeIntake.userId,recipeIntake.foodId]);
     return results
 }
 export async function findUserReviews(userId:string,region:string,next?:string){
