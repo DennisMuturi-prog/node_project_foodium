@@ -47,7 +47,7 @@ interface addRecipeIntakeBody{
     region:string
 }
 interface addFoodIntakeBody{
-    recipeId:string;
+    foodId:string;
 }
 interface getUserReviewsBody{
     next?:string
@@ -208,12 +208,12 @@ export const addRecipeIntakeHandler:RequestHandler=async (req,res)=>{
 }
 export const addFoodIntakeHandler:RequestHandler=async (req,res)=>{
     const addRecipeIntakeInfo=<addFoodIntakeBody>req.body
-    if(!addRecipeIntakeInfo.recipeId){
-        res.status(404).send('provide recipe id')
+    if(!addRecipeIntakeInfo.foodId){
+        res.status(404).send('provide food id')
         return 
     }
     try {
-        const results=await addFoodIntake({userId:req.userId,foodId:addRecipeIntakeInfo.recipeId})
+        const results=await addFoodIntake({userId:req.userId,foodId:addRecipeIntakeInfo.foodId})
         res.json({results,newTokens:req.newTokens})
         return 
     } catch (error) {
