@@ -3,7 +3,6 @@ services:
   env_file: "webapp.env"
   build:
    context: .
-   target: production
 
   ports:
    - 3000:3000
