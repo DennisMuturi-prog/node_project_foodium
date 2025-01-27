@@ -1,4 +1,4 @@
-import {createConnection,PoolOptions} from 'mysql2/promise';
+import {createPool,PoolOptions} from 'mysql2/promise';
 import {readFileSync} from 'fs'
 import { config } from 'dotenv';
 import { resolve } from 'path';
@@ -18,8 +18,7 @@ const dbconfig:PoolOptions =
     port: 3306,
     ssl: {ca: readFileSync(resolve(__dirname,"DigiCertGlobalRootCA.crt.pem"))}
 };
-const connection=await createConnection(dbconfig)
-
+const connection=await createPool(dbconfig)
 type oAuthUser={
     email:string,
     google_id:string
@@ -93,7 +92,7 @@ export async function updateOauthUserUsername(username:string,userId:string){
     return results
     
 }
-interface Recipe {
+export interface Recipe {
     uuid: string;
     recipe_name: string;
     ingredients: string; // JSON string
@@ -117,7 +116,7 @@ interface Recipe {
     Vitamin_D4: number;
     image_url: string;
 }
-interface KenyanRecipe {
+export interface KenyanRecipe {
     uuid: string;
     recipe_name: string;
     page: number;
@@ -162,6 +161,21 @@ export interface RecipeIntake{
 export interface foodIntake{
     userId:string
     foodId:string
+}
+export async function searchFoods(searchTerm:string){
+    const [results]:any=await connection.query(`CALL search_foods(?)`,[searchTerm])
+    return results[0]
+
+}
+export async function searchRecipes(searchTerm:string,region:string){
+    const [results]:any=await connection.query(`CALL ${region=='kenyan'?'search_kenyan_recipes(?)':'search_recipes(?)'}`,[searchTerm])
+    console.log(results)
+    if(region=='kenyan'){
+        return parseKenyanRecipes(results[0])
+    }
+    else{
+        return parseRecipes(results[0])
+    }
 }
 export async function addRecipeIntake(recipeIntake:RecipeIntake){
     const [results] = await connection.query(`CALL ${recipeIntake.region=='kenyan'?'add_kenyan_recipe_intake(?,?)':'add_recipe_intake(?,?)'}`,[recipeIntake.userId,recipeIntake.recipeId]);
@@ -212,7 +226,7 @@ export async function addRating(rating:Rating){
     const ratingStatus:{task:string}=results[0][0]
     return ratingStatus
 }
-function parseRecipes(results:Recipe[]){
+export function parseRecipes(results:Recipe[]){
     let recipes=results.map((recipe)=>{
         return {...recipe,ingredients:JSON.parse(recipe['ingredients']),directions:JSON.parse(recipe['directions']),NER:JSON.parse(recipe['NER'])
         }}
@@ -220,7 +234,7 @@ function parseRecipes(results:Recipe[]){
     return recipes
 
 }
-function parseKenyanRecipes(results:KenyanRecipe[]){
+export function parseKenyanRecipes(results:KenyanRecipe[]){
     let recipes:KenyanRecipe[]=results
     recipes=recipes.map((recipe)=>{
         return {...recipe,parsedIngredientsList:JSON.parse(recipe['parsedIngredientsList'].replace(/'/g, '"'))
