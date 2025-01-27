@@ -1,13 +1,7 @@
 import {createPool,PoolOptions} from 'mysql2/promise';
 import {readFileSync} from 'fs'
 import { config } from 'dotenv';
-import { resolve } from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
 config()
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 const dbconfig:PoolOptions =
 {
@@ -16,7 +10,7 @@ const dbconfig:PoolOptions =
     password: process.env.AZURE_PASSWWORD,
     database: process.env.AZURE_DB,
     port: 3306,
-    ssl: {ca: readFileSync(resolve(__dirname,"DigiCertGlobalRootCA.crt.pem"))}
+    ssl: {ca: readFileSync("DigiCertGlobalRootCA.crt.pem")}
 };
 const connection=await createPool(dbconfig)
 type oAuthUser={
@@ -169,7 +163,6 @@ export async function searchFoods(searchTerm:string){
 }
 export async function searchRecipes(searchTerm:string,region:string){
     const [results]:any=await connection.query(`CALL ${region=='kenyan'?'search_kenyan_recipes(?)':'search_recipes(?)'}`,[searchTerm])
-    console.log(results)
     if(region=='kenyan'){
         return parseKenyanRecipes(results[0])
     }
