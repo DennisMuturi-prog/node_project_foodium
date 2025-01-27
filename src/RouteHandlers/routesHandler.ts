@@ -2,7 +2,7 @@
 import {RequestHandler} from 'express'
 import { checkAccessToken,checkRefreshToken, createAuthTokens } from "../auth/AuthTokens.js";
 import bcrypt from "bcrypt";
-import { addFoodIntake,findUserReviews ,findUserRatings,findUserRecipeIntake, addRating, addRecipeIntake, addReview, checkIfPasswordUserExists, checkUsernameAvailability, findRecipeReviews, findUserFoodIntake, getPaginatedRecipes, Rating, registerPasswordUser, Review, updateOauthUserUsername } from "../sqlDB/mysqlDB.js";
+import { addFoodIntake,findUserReviews ,findUserRatings,findUserRecipeIntake, addRating, addRecipeIntake, addReview, checkIfPasswordUserExists, checkUsernameAvailability, findRecipeReviews, findUserFoodIntake, getPaginatedRecipes, Rating, registerPasswordUser, Review, updateOauthUserUsername, searchFoods, searchRecipes } from "../sqlDB/mysqlDB.js";
 
 interface CheckAuthRequestBody{
     accessToken:string;
@@ -62,8 +62,53 @@ interface getUserFoodIntakeBody{
     next?:string
 
 }
+interface searchBody{
+    searchTerm:string
+    region:string
+}
+interface searchFoodsBody{
+    searchTerm:string
+}
+export const searchFoodsHandler:RequestHandler=async (req,res)=>{
+    const searchInfo=<searchFoodsBody>req.body
+    if(!searchInfo.searchTerm){
+        res.status(404).send('provide search term') 
+        return
+    }
+    try {
+        const searchResults=await searchFoods(searchInfo.searchTerm)
+        res.json({results:searchResults,newTokens:req.newTokens})
+        return
+        
+    } catch (error) {
+        console.log('error at searching foods',error)
+        res.status(404).send('an error occurred while searching foods,try again') 
+        return  
+    }
+}
+export const searchRecipesHandler:RequestHandler=async (req,res)=>{
+    const searchInfo=<searchBody>req.body
+    if(!(searchInfo.region&&searchInfo.searchTerm)){
+        res.status(404).send('provide search term and region of recipes') 
+        return
+    }
+    try {
+        const searchResults=await searchRecipes(searchInfo.searchTerm,searchInfo.region)
+        res.json({results:searchResults,newTokens:req.newTokens})
+        return
+        
+    } catch (error) {
+        console.log('error at searching recipes',error)
+        res.status(404).send('an error occurred while searching recipes,try again') 
+        return  
+    }
+}
 export const getUserRecipeIntakeHandler:RequestHandler=async (req,res)=>{
     const getUserRecipeIntakeInfo=<getUserRatingsBody>req.body
+    if(!getUserRecipeIntakeInfo.region){
+        res.status(404).send('provide region of recipes') 
+        return
+    }
     try {
         if(getUserRecipeIntakeInfo.next){
             const results=await findUserRecipeIntake(req.userId,getUserRecipeIntakeInfo.region,getUserRecipeIntakeInfo.next)
@@ -128,6 +173,10 @@ export const getUserFoodIntakeHandler:RequestHandler=async (req,res)=>{
 }
 export const getUserRatingsHandler:RequestHandler=async (req,res)=>{
     const getUserRatingsInfo=<getUserRatingsBody>req.body
+    if(!getUserRatingsInfo.region){
+        res.status(404).send('provide region of recipes') 
+        return
+    }
     try {
         if(getUserRatingsInfo.next){
             const results=await findUserRatings(req.userId,getUserRatingsInfo.region,getUserRatingsInfo.next)
@@ -160,6 +209,10 @@ export const getUserRatingsHandler:RequestHandler=async (req,res)=>{
 }
 export const getUserReviewsHandler:RequestHandler=async (req,res)=>{
     const getUserReviewsInfo=<getUserReviewsBody>req.body
+    if(!getUserReviewsInfo.region){
+        res.status(404).send('provide region of recipes') 
+        return
+    }
     try {
         if(getUserReviewsInfo.next){
             const results=await findUserReviews(req.userId,getUserReviewsInfo.region,getUserReviewsInfo.next)
@@ -192,8 +245,8 @@ export const getUserReviewsHandler:RequestHandler=async (req,res)=>{
 }
 export const addRecipeIntakeHandler:RequestHandler=async (req,res)=>{
     const addRecipeIntakeInfo=<addRecipeIntakeBody>req.body
-    if(!addRecipeIntakeInfo.recipeId){
-        res.status(404).send('provide recipe id')
+    if(!(addRecipeIntakeInfo.recipeId&&addRecipeIntakeInfo.region)){
+        res.status(404).send('provide recipe id and region of recipes')
         return 
     }
     try {
@@ -224,8 +277,8 @@ export const addFoodIntakeHandler:RequestHandler=async (req,res)=>{
 }
 export const getReviewsHandler:RequestHandler=async (req,res)=>{
     const getReviewsInfo=<getReviewsBody>req.body
-    if(!getReviewsInfo.recipeId){
-        res.status(404).send('provide recipe id')
+    if(!(getReviewsInfo.recipeId&&getReviewsInfo.region)){
+        res.status(404).send('provide recipe id and the region of recipes')
         return 
     }
     try {
@@ -284,8 +337,8 @@ export const getReviewsHandler:RequestHandler=async (req,res)=>{
 
 export const addRecipeReviewHandler:RequestHandler=async (req,res)=>{
     const addReviewInfo=<ReviewBody>req.body
-    if(!(addReviewInfo.reviewText&&addReviewInfo.recipeId)){
-        res.status(404).send('provide review text and recipe id')
+    if(!(addReviewInfo.reviewText&&addReviewInfo.recipeId&&addReviewInfo.region)){
+        res.status(404).send('provide review text,region of recipes and recipe id')
         return 
     }
     try {
@@ -311,8 +364,8 @@ export const addRecipeReviewHandler:RequestHandler=async (req,res)=>{
 }
 export const addRecipeRatingHandler:RequestHandler=async (req,res)=>{
     const addRatingInfo=<RatingBody>req.body
-    if(!(addRatingInfo.ratingNumber&&addRatingInfo.recipeId)){
-        res.status(404).send('provide rating number and recipe id')
+    if(!(addRatingInfo.ratingNumber&&addRatingInfo.recipeId&&addRatingInfo.region)){
+        res.status(404).send('provide rating number ,region of recipes and recipe id')
         return 
     }
     try {
@@ -364,6 +417,11 @@ export const addUsernameForOauthHandler:RequestHandler=async(req,res)=>{
 }
 export const fetchPaginatedRecipesHandler:RequestHandler=async(req,res)=>{
     const pageInfo=<GetPaginatedRecipesBody>req.body
+    if(!pageInfo.region){
+        res.status(404).send('provide region of recipes you want')
+        return
+
+    }
     try {
         if(pageInfo.numberOfResults&&pageInfo.next){
             const recipes=await getPaginatedRecipes(pageInfo.numberOfResults,pageInfo.region,pageInfo.next)
