@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev2": "ts-node-dev --poll ./src/main.ts",
-    "dev":"npx tsx watch --no-emit  ./src/main.ts",
+    "dev":"npx tsx watch  ./src/main.ts",
     "build": "rimraf ./dist && tsc",
     "start": "npm run build && node dist/index.js"
   },
