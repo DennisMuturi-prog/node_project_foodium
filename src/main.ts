@@ -3,7 +3,7 @@ import express from 'express'
 import passport from 'passport'
 import './auth/auth.js'
 import { createAuthTokens } from "./auth/AuthTokens.js";
-import { addFoodIntakeHandler, addRecipeIntakeHandler, addRecipeRatingHandler, addRecipeReviewHandler, addUsernameForOauthHandler, checkAuthentication, getReviewsHandler, getUserFoodIntakeHandler, getUserRatingsHandler, getUserRecipeIntakeHandler, getUserReviewsHandler, loginRouteHandler, registerRouteHandler,fetchPaginatedRecipesHandler, searchRecipesHandler, searchFoodsHandler } from "./RouteHandlers/routesHandler.js";
+import { addFoodIntakeHandler, addRecipeIntakeHandler, addRecipeRatingHandler, addRecipeReviewHandler, addUsernameForOauthHandler, checkAuthentication, getReviewsHandler, getUserFoodIntakeHandler, getUserRatingsHandler, getUserRecipeIntakeHandler, getUserReviewsHandler, loginRouteHandler, registerRouteHandler,fetchPaginatedRecipesHandler, searchRecipesHandler, searchFoodsHandler, fetchRecipesByDietTypeHandler,addUserPreferenceHandler,updateUserPreferenceHandler } from "./RouteHandlers/routesHandler.js";
 import dotenv from 'dotenv'
 dotenv.config()
 
@@ -46,6 +46,7 @@ app.post('/protected',checkAuthentication,(req,res)=>{
 app.post('/register',registerRouteHandler)
 app.post('/login',loginRouteHandler)
 app.post('/getRecipes',checkAuthentication,fetchPaginatedRecipesHandler)
+app.post('/getRecipesByDietType',checkAuthentication,fetchRecipesByDietTypeHandler)
 app.post('/addUsername',checkAuthentication,addUsernameForOauthHandler)
 app.post('/addReview',checkAuthentication,addRecipeReviewHandler)
 app.post('/addRating',checkAuthentication,addRecipeRatingHandler)
@@ -58,6 +59,8 @@ app.post('/getUserRecipeIntake',checkAuthentication,getUserRecipeIntakeHandler)
 app.post('/getUserFoodIntake',checkAuthentication,getUserFoodIntakeHandler)
 app.post('/searchRecipes',checkAuthentication,searchRecipesHandler)
 app.post('/searchFoods',checkAuthentication,searchFoodsHandler)
+app.post('/addUserPreference', checkAuthentication, addUserPreferenceHandler);
+app.post('/updateUserPreference', checkAuthentication, updateUserPreferenceHandler);
 
 
 app.get('/failure', (_req, res) => {

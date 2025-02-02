@@ -2,7 +2,7 @@
 import {RequestHandler} from 'express'
 import { checkAccessToken,checkRefreshToken, createAuthTokens } from "../auth/AuthTokens.js";
 import bcrypt from "bcrypt";
-import { addFoodIntake,findUserReviews ,findUserRatings,findUserRecipeIntake, addRating, addRecipeIntake, addReview, checkIfPasswordUserExists, checkUsernameAvailability, findRecipeReviews, findUserFoodIntake, getPaginatedRecipes, Rating, registerPasswordUser, Review, updateOauthUserUsername, searchFoods, searchRecipes } from "../sqlDB/mysqlDB.js";
+import { addFoodIntake,findUserReviews ,findUserRatings,findUserRecipeIntake, addRating, addRecipeIntake, addReview, checkIfPasswordUserExists, checkUsernameAvailability, findRecipeReviews, findUserFoodIntake, getPaginatedRecipes, Rating, registerPasswordUser, Review, updateOauthUserUsername, searchFoods, searchRecipes, getRecipesByDietType,addUserPreference,updateUserPreference } from "../sqlDB/mysqlDB.js";
 
 interface CheckAuthRequestBody{
     accessToken:string;
@@ -69,6 +69,52 @@ interface searchBody{
 interface searchFoodsBody{
     searchTerm:string
 }
+interface GetRecipesByDietTypeBody {
+    dietType: string;
+    noOfMeals: number;
+    region: string;
+    userWeight:number
+    next?: string;
+}
+interface UserPreferenceRequestBody {
+    userNumberOfMealsADay: number;
+    userDietType: string;
+    userWeight:number
+}
+export const addUserPreferenceHandler: RequestHandler = async (req, res) => {
+    const preferenceInfo = <UserPreferenceRequestBody>req.body;
+
+    if (!(preferenceInfo.userNumberOfMealsADay && preferenceInfo.userDietType&&preferenceInfo.userWeight)) {
+        res.status(400).send('Provide all fields:  userNumberOfMealsADay, userDietType,userWeight');
+        return;
+    }
+
+    try {
+        const result = await addUserPreference(req.userId, preferenceInfo.userNumberOfMealsADay, preferenceInfo.userDietType,preferenceInfo.userWeight);
+        res.status(201).json({ message: 'User preference added successfully', result ,newTokens:req.newTokens});
+    } catch (error) {
+        console.error('Error adding user preference:', error);
+        res.status(500).send('An error occurred while adding user preference, try again');
+    }
+};
+
+export const updateUserPreferenceHandler: RequestHandler = async (req, res) => {
+    const preferenceInfo = <UserPreferenceRequestBody>req.body;
+
+    if (!(preferenceInfo.userNumberOfMealsADay && preferenceInfo.userDietType && preferenceInfo.userWeight)) {
+        res.status(400).send('Provide all fields: userId, userNumberOfMealsADay, userDietType,userWeight');
+        return;
+    }
+
+    try {
+        const result = await updateUserPreference(req.userId, preferenceInfo.userNumberOfMealsADay, preferenceInfo.userDietType,preferenceInfo.userWeight);
+        res.status(200).json({ message: 'User preference updated successfully', result ,newTokens:req.newTokens});
+        return
+    } catch (error) {
+        console.error('Error updating user preference:', error);
+        res.status(500).send('An error occurred while updating user preference, try again');
+    }
+};
 export const searchFoodsHandler:RequestHandler=async (req,res)=>{
     const searchInfo=<searchFoodsBody>req.body
     if(!searchInfo.searchTerm){
@@ -415,6 +461,53 @@ export const addUsernameForOauthHandler:RequestHandler=async(req,res)=>{
         
     }
 }
+export const fetchRecipesByDietTypeHandler: RequestHandler = async (req, res) => {
+    const pageInfo = <GetRecipesByDietTypeBody>req.body;
+
+    if (!pageInfo.region) {
+        res.status(404).send('Provide the region of recipes you want');
+        return;
+    }
+
+    if (!pageInfo.dietType) {
+        res.status(404).send('Provide the diet type');
+        return;
+    }
+
+    if (!pageInfo.noOfMeals) {
+        res.status(404).send('Provide the number of meals');
+        return;
+    }
+    if (!pageInfo.userWeight) {
+        res.status(404).send('Provide the userWeight');
+        return;
+    }
+
+    try {
+        let recipes;
+        if (pageInfo.next) {
+            recipes = await getRecipesByDietType(pageInfo.dietType, pageInfo.noOfMeals, pageInfo.region,pageInfo.userWeight, pageInfo.next);
+        }
+        else{
+            recipes = await getRecipesByDietType(pageInfo.dietType, pageInfo.noOfMeals, pageInfo.region,pageInfo.userWeight);
+
+        }
+        console.log(recipes)
+
+        const recipesResponse = {
+            results: recipes,
+            next: recipes.length > 0 ? recipes[recipes.length - 1]['uuid'] : null,
+            newTokens: req.newTokens
+        };
+
+        res.json(recipesResponse);
+        return;
+    } catch (error) {
+        console.log(error);
+        res.status(404).send('An error occurred while retrieving recipes, try again');
+        return
+    }
+};
 export const fetchPaginatedRecipesHandler:RequestHandler=async(req,res)=>{
     const pageInfo=<GetPaginatedRecipesBody>req.body
     if(!pageInfo.region){

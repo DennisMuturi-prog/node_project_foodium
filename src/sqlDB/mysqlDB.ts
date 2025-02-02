@@ -86,6 +86,15 @@ export async function updateOauthUserUsername(username:string,userId:string){
     return results
     
 }
+export async function addUserPreference(userId: string, userNumberOfMealsADay: number, userDietType: string,userWeight:number) {  
+    const [result]: any = await connection.query('AddUserPreference(?,?,?,?)', [userId, userNumberOfMealsADay, userDietType,userWeight]);
+    return result;
+}
+export async function updateUserPreference(userId: string, userNumberOfMealsADay: number, userDietType: string,userWeight:number) {
+    const query = `CALL UpdateUserPreference(?,?,?,?)`;
+    const [result]: any = await connection.query(query, [userId, userNumberOfMealsADay, userDietType,userWeight]);
+    return result;
+}
 export interface Recipe {
     uuid: string;
     recipe_name: string;
@@ -255,6 +264,7 @@ export async function getPaginatedRecipes(number_of_results:number,region:string
             return parseRecipes(results[0] as Recipe[])
         }
         else{
+            console.log(results)
             return parseKenyanRecipes(results[0] as KenyanRecipe[])
 
         }
@@ -262,6 +272,31 @@ export async function getPaginatedRecipes(number_of_results:number,region:string
     }
     
     
+}
+export async function getRecipesByDietType(dietType: string, noOfMeals: number, region: string,userWeight:number, next?: string) {
+    if (next) {
+        const [results]: any = await connection.query(
+            `CALL ${region === 'kenyan' ? 'GetPaginatedRecipesByDietType(?,?,?,?)' : 'GetPaginatedRecipesByDietTypeWorldwide(?,?,?.?)'}`,
+            [dietType, noOfMeals,next,userWeight]
+        );
+
+        if (region === 'worldwide') {
+            return parseRecipes(results[0] as Recipe[]);
+        } else {
+            return parseKenyanRecipes(results[0] as KenyanRecipe[]);
+        }
+    } else {
+        const [results]: any = await connection.query(
+            `CALL ${region === 'kenyan' ? 'GetRecipesByDietType(?,?,?)' : 'GetRecipesByDietTypeWorldwide(?,?,?)'}`,
+            [dietType, noOfMeals,userWeight]
+        );
+
+        if (region === 'worldwide') {
+            return parseRecipes(results[0] as Recipe[]);
+        } else {
+            return parseKenyanRecipes(results[0] as KenyanRecipe[]);
+        }
+    }
 }
 // const result=await getPaginatedRecipes(5,'kenyan')
 // console.log('results..',result)
