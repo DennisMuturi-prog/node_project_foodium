@@ -11,6 +11,10 @@ const app=express()
 app.use(express.urlencoded({extended:false,limit: '50mb'}));
 app.use(express.json({ limit: '50mb' }));
 app.use(passport.initialize())
+app.get('/',(req,res)=>{
+  res.send('hello')
+  return
+})
 app.get(
   '/auth/google',
   passport.authenticate('google',{session:false,scope:['email','profile']})
