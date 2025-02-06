@@ -6,11 +6,12 @@ dotenv.config()
 
 const clientID = process.env.GOOGLE_CLIENT_ID || '';
 const clientSecret = process.env.GOOGLE_CLIENT_SECRET|| '';
+const callBackUrl=process.env.CALLBACK_URL|| '';
 
 passport.use(new GoogleStrategy({
     clientID: clientID,
     clientSecret: clientSecret,
-    callbackURL: "https://foodiumnodejs.gentledune-9460edf8.southafricanorth.azurecontainerapps.io/auth/google/callback"
+    callbackURL: callBackUrl
   },
   async function(_accessToken, _refreshToken, profile, done) {
     try {
