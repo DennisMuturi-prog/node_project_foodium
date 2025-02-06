@@ -44,6 +44,7 @@ interface User {
 export async function registerOauthUser(registerRequest:oAuthUser){
     const [results]:any = await connection.query(`CALL add_oauth_user(?,?)`,[registerRequest.email,registerRequest.google_id]);
     const user:registeredOauthUser  = results[0][0];
+    console.log('log at mysqlDB:', user)
     return user
 }
 

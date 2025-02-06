@@ -21,7 +21,7 @@ passport.use(new GoogleStrategy({
         }
         //registerOauthuser has logic to check if a user exists already embedded in database
         const user=await registerOauthUser(oauthUser)
-        console.log(user)
+        console.log('log at oauth',user)
         return done(null,user)
       }
       

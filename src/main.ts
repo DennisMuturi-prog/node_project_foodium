@@ -12,7 +12,7 @@ app.use(express.urlencoded({extended:false,limit: '50mb'}));
 app.use(express.json({ limit: '50mb' }));
 app.use(passport.initialize())
 app.get('/',(req,res)=>{
-  res.send('hello')
+  res.send('hello world')
   return
 })
 app.get(
