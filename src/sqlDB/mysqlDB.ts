@@ -1,4 +1,4 @@
-import {createPool,PoolOptions} from 'mysql2/promise';
+import {createPool,Pool,PoolOptions} from 'mysql2/promise';
 import {readFileSync} from 'fs'
 import { config } from 'dotenv';
 config()
@@ -12,7 +12,14 @@ const dbconfig:PoolOptions =
     port: 3306,
     ssl: {ca: readFileSync("DigiCertGlobalRootCA.crt.pem")}
 };
-const connection=await createPool(dbconfig)
+let connection:Pool
+try {
+    connection=await createPool(dbconfig)
+    
+} catch (error) {
+    console.log('connection failed',error)
+    
+}
 type oAuthUser={
     email:string,
     google_id:string
