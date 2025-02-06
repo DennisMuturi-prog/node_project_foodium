@@ -8,7 +8,7 @@
     "dev2": "ts-node-dev --poll ./src/main.ts",
     "dev":"npx tsx watch  ./src/main.ts",
     "build": "rimraf ./dist && tsc",
-    "start": "npm run build && node dist/index.js",
+    "start": "node dist/index.js",
     "prod":"npx tsx ./src/main.ts"
   },
   "keywords": [],
