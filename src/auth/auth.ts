@@ -10,7 +10,7 @@ const clientSecret = process.env.GOOGLE_CLIENT_SECRET|| '';
 passport.use(new GoogleStrategy({
     clientID: clientID,
     clientSecret: clientSecret,
-    callbackURL: "http://localhost:3000/auth/google/callback"
+    callbackURL: "https://foodiumnodejs.gentledune-9460edf8.southafricanorth.azurecontainerapps.io/auth/google/callback"
   },
   async function(_accessToken, _refreshToken, profile, done) {
     try {
