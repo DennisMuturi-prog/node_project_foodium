@@ -24,11 +24,9 @@ app.get(
   (req,res)=>{
     passport.authenticate('google',{session:false},
       (err,user,_info,_status)=>{
-        console.log(user)
         if(err){
           console.log('error at:',err)
           return res.status(404).send('failed to authenticate')}
-        console.log(user)
         if(user){
           const authTokens=createAuthTokens(user)
           res.cookie("id",authTokens.accessToken)
