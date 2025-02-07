@@ -330,7 +330,6 @@ export const getReviewsHandler:RequestHandler=async (req,res)=>{
     try {
         if(getReviewsInfo.numberOfResults&&getReviewsInfo.next){
             const reviews=await findRecipeReviews(getReviewsInfo.recipeId,getReviewsInfo.region,getReviewsInfo.numberOfResults,getReviewsInfo.next)
-            console.log(reviews)
             if(reviews.length>0){
                 res.json({results:reviews,next:reviews[reviews.length-1]['uuid'],newTokens:req.newTokens})
                 return 
@@ -502,7 +501,7 @@ export const fetchRecipesByDietTypeHandler: RequestHandler = async (req, res) =>
         res.json(recipesResponse);
         return;
     } catch (error) {
-        console.log(error);
+        console.log('error at diet recipes:',error);
         res.status(404).send('An error occurred while retrieving recipes, try again');
         return
     }
@@ -558,7 +557,7 @@ export const fetchPaginatedRecipesHandler:RequestHandler=async(req,res)=>{
         
     } catch (error) {
         
-        console.log(error);
+        console.log('error at fetch paginated recipes',error);
         res.status(404).send('an errror occurred while retrieving recipes,try again')
         return 
         
