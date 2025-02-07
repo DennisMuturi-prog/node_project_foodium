@@ -14,10 +14,11 @@ const dbconfig:PoolOptions =
 };
 let connection:Pool
 try {
-    connection=await createPool(dbconfig)
+    connection=createPool(dbconfig)
+    console.log('connection to db successful')
     
 } catch (error) {
-    console.log('connection failed',error)
+    console.log('connection to database failed',error)
     
 }
 type oAuthUser={
@@ -51,7 +52,6 @@ interface User {
 export async function registerOauthUser(registerRequest:oAuthUser){
     const [results]:any = await connection.query(`CALL add_oauth_user(?,?)`,[registerRequest.email,registerRequest.google_id]);
     const user:registeredOauthUser  = results[0][0];
-    console.log('log at mysqlDB:', user)
     return user
 }
 
@@ -272,7 +272,6 @@ export async function getPaginatedRecipes(number_of_results:number,region:string
             return parseRecipes(results[0] as Recipe[])
         }
         else{
-            console.log(results)
             return parseKenyanRecipes(results[0] as KenyanRecipe[])
 
         }
