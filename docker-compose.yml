@@ -2,7 +2,7 @@ services:
  api:
   env_file: "webapp.env"
   build:
-   context: .
+    context: .
 
   ports:
    - 3000:3000

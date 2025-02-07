@@ -492,7 +492,6 @@ export const fetchRecipesByDietTypeHandler: RequestHandler = async (req, res) =>
             recipes = await getRecipesByDietType(pageInfo.dietType, pageInfo.noOfMeals, pageInfo.region,pageInfo.userWeight);
 
         }
-        console.log(recipes)
 
         const recipesResponse = {
             results: recipes,
