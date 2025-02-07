@@ -7,7 +7,6 @@ dotenv.config()
 
 const clientID = process.env.GOOGLE_CLIENT_ID || '';
 const clientSecret = process.env.GOOGLE_CLIENT_SECRET|| '';
-console.log(clientID)
 
 passport.use(new GoogleStrategy({
     clientID: clientID,
@@ -15,7 +14,6 @@ passport.use(new GoogleStrategy({
     callbackURL: "https://foodiumnodejs.gentledune-9460edf8.southafricanorth.azurecontainerapps.io/auth/google/callback"
   },
   async (_accessToken, _refreshToken, profile, done) =>{
-    console.log(profile)
     if(profile.emails){
       const oauthUser={
         email:profile.emails[0].value,
