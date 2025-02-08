@@ -26,14 +26,16 @@ app.get(
       (err,user,_info,_status)=>{
         if(err){
           console.log('error at:',err)
-          return res.status(404).send('failed to authenticate')}
+          res.redirect('/failure')
+          return
+        }
         if(user){
           const authTokens=createAuthTokens(user)
-          res.cookie("id",authTokens.accessToken)
-          res.cookie("rid",authTokens.refreshToken)
-          return res.json(authTokens)
+          res.redirect(`foodiumapp://oauth?accessToken=${authTokens.accessToken}&refreshToken=${authTokens.refreshToken}`);
+          return
         }
-        return res.redirect('/failure')
+        res.redirect('/failure')
+        return
     
       }
     )(req, res)
