@@ -7,7 +7,7 @@ const dbconfig:PoolOptions =
 {
     host: process.env.AZURE_HOSTNAME,
     user: process.env.AZURE_USERNAME,
-    password: process.env.AZURE_PASSWWORD,
+    password: process.env.AZURE_PASSWORD,
     database: process.env.AZURE_DB,
     port: 3306,
     ssl: {ca: readFileSync("DigiCertGlobalRootCA.crt.pem")}
