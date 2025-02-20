@@ -1,4 +1,4 @@
-name: Linux Container Foodium node Workflow
+name: Linux Container App service Node Workflow
 
 on: [push]
 
@@ -7,19 +7,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: copy repository
-      uses: actions/checkout@v2
-      with:
-        lfs: true
-    - name: Log in to Azure
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - uses: actions/checkout@v2
 
-    - name: Build and deploy Container App
-      uses: azure/container-apps-deploy-action@v1
+    - uses: azure/docker-login@v1
       with:
-        appSourcePath: ${{ github.workspace }}
-        acrName: foodiumdockercontainers
-        containerAppName: foodiumnodejs
-        resourceGroup: NetworkWatcherRG
+        login-server: foodiumdockercontainers.azurecr.io
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+
+    - run: |
+        docker build . -t foodiumdockercontainers.azurecr.io/myapp:${{ github.sha }}
+        docker push foodiumdockercontainers.azurecr.io/myapp:${{ github.sha }}     
+
+    - uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'nodejsBackend'
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        images: 'foodiumdockercontainers.azurecr.io/myapp:${{ github.sha }}'
