@@ -95,7 +95,7 @@ export async function updateOauthUserUsername(username:string,userId:string){
     
 }
 export async function addUserPreference(userId: string, userNumberOfMealsADay: number, userDietType: string,userWeight:number) {  
-    const [result]: any = await connection.query('AddUserPreference(?,?,?,?)', [userId, userNumberOfMealsADay, userDietType,userWeight]);
+    const [result]: any = await connection.query('CALL AddUserPreference(?,?,?,?)', [userId, userNumberOfMealsADay, userDietType,userWeight]);
     return result;
 }
 export async function updateUserPreference(userId: string, userNumberOfMealsADay: number, userDietType: string,userWeight:number) {
