@@ -15,7 +15,7 @@ const dbconfig:PoolOptions =
 let connection:Pool
 try {
     connection=createPool(dbconfig)
-    console.log('connection to db successful')
+    console.log('connection to db successfully')
     
 } catch (error) {
     console.log('connection to database failed',error)
