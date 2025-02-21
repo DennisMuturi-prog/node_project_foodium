@@ -514,7 +514,7 @@ export const fetchPaginatedRecipesHandler:RequestHandler=async(req,res)=>{
 
     }
     try {
-        if(pageInfo.numberOfResults&&pageInfo.next){
+        if(pageInfo.numberOfResults&&pageInfo.next!='first page'){
             const recipes=await getPaginatedRecipes(pageInfo.numberOfResults,pageInfo.region,pageInfo.next)
             const recipesResponse={
                 results:recipes,
@@ -525,7 +525,7 @@ export const fetchPaginatedRecipesHandler:RequestHandler=async(req,res)=>{
             res.json(recipesResponse)
             return 
         }
-        else if(!pageInfo.numberOfResults&&pageInfo.next){
+        else if(!pageInfo.numberOfResults&&pageInfo.next!='first page'){
             const recipes=await getPaginatedRecipes(5,pageInfo.region,pageInfo.next)
             const recipesResponse={
                 results:recipes,
