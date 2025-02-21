@@ -536,7 +536,7 @@ export const fetchPaginatedRecipesHandler:RequestHandler=async(req,res)=>{
             res.json(recipesResponse)
             return 
         }
-        else if(pageInfo.numberOfResults&&!pageInfo.next){
+        else if(pageInfo.numberOfResults&&pageInfo.next=='first page'){
             const recipes=await getPaginatedRecipes(pageInfo.numberOfResults,pageInfo.region)
             const recipesResponse={
                 results:recipes,
