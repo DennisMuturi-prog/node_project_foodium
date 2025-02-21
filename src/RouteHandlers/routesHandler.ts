@@ -518,6 +518,7 @@ export const fetchPaginatedRecipesHandler:RequestHandler=async(req,res)=>{
             const recipes=await getPaginatedRecipes(pageInfo.numberOfResults,pageInfo.region,pageInfo.next)
             const recipesResponse={
                 results:recipes,
+                previous:pageInfo.next,
                 next:recipes[recipes.length-1]['uuid'],
                 newTokens:req.newTokens
             }
@@ -528,6 +529,7 @@ export const fetchPaginatedRecipesHandler:RequestHandler=async(req,res)=>{
             const recipes=await getPaginatedRecipes(5,pageInfo.region,pageInfo.next)
             const recipesResponse={
                 results:recipes,
+                previous:pageInfo.next,
                 next:recipes[recipes.length-1]['uuid'],
                 newTokens:req.newTokens
             }
@@ -538,6 +540,7 @@ export const fetchPaginatedRecipesHandler:RequestHandler=async(req,res)=>{
             const recipes=await getPaginatedRecipes(pageInfo.numberOfResults,pageInfo.region)
             const recipesResponse={
                 results:recipes,
+                previous:pageInfo.next,
                 next:recipes[recipes.length-1]['uuid'],
                 newTokens:req.newTokens
             }
@@ -548,6 +551,7 @@ export const fetchPaginatedRecipesHandler:RequestHandler=async(req,res)=>{
             const recipes=await getPaginatedRecipes(5,pageInfo.region)
             const recipesResponse={
                 results:recipes,
+                previous:pageInfo.next,
                 next:recipes[recipes.length-1]['uuid'],
                 newTokens:req.newTokens
             }
