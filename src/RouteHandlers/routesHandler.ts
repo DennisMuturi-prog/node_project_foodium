@@ -1,5 +1,5 @@
 
-import {RequestHandler} from 'express'
+import {RequestHandler,Response} from 'express'
 import { checkAccessToken,checkRefreshToken, createAuthTokens } from "../auth/AuthTokens.js";
 import bcrypt from "bcrypt";
 import { addFoodIntake,findUserReviews ,findUserRatings,findUserRecipeIntake, addRating, addRecipeIntake, addReview, checkIfPasswordUserExists, checkUsernameAvailability, findRecipeReviews, findUserFoodIntake, getPaginatedRecipes, Rating, registerPasswordUser, Review, updateOauthUserUsername, searchFoods, searchRecipes, getRecipesByDietType,addUserPreference,updateUserPreference } from "../sqlDB/mysqlDB.js";
@@ -80,6 +80,45 @@ interface UserPreferenceRequestBody {
     userNumberOfMealsADay: number;
     userDietType: string;
     userWeight:number
+}
+interface ReviewsEventBody{
+    recipeId:string;
+}
+interface Client{
+    id:string;
+    response:Response;
+}
+type addedReview={
+    task:string,
+    reviewerName:string,
+    reviewText:String,
+    recipeId:string,    
+    createdAt:Date
+}
+
+let activeClients:Client[]=[]
+export const reviewsStreamHandler: RequestHandler = async (req, res) => {
+    // if(!(reviewsEventInfo.recipeId)){
+    //     res.status(404).send('provide recipe id and region of recipes')
+    //     return 
+    // }
+    const headers = {
+      'Content-Type': 'text/event-stream',
+      'Connection': 'keep-alive',
+      'Cache-Control': 'no-cache'
+    };
+    res.writeHead(200, headers);
+    // const recipeId=reviewsEventInfo.recipeId
+    const clientId=Date.now().toString()
+    const client={
+        id:clientId,
+        response:res,
+    }
+    activeClients.push(client)
+    req.on('close',()=>{
+        activeClients = activeClients.filter(client => client.id!== clientId);
+    })
+
 }
 export const addUserPreferenceHandler: RequestHandler = async (req, res) => {
     const preferenceInfo = <UserPreferenceRequestBody>req.body;
@@ -379,6 +418,11 @@ export const getReviewsHandler:RequestHandler=async (req,res)=>{
         return 
     }
 }
+function sendReviewNotificationToAll(newReview:addedReview) {
+    activeClients.forEach(client => {
+            client.response.write(`data: ${JSON.stringify(newReview)}\n\n`)})
+
+}
 
 export const addRecipeReviewHandler:RequestHandler=async (req,res)=>{
     const addReviewInfo=<ReviewBody>req.body
@@ -399,8 +443,8 @@ export const addRecipeReviewHandler:RequestHandler=async (req,res)=>{
             return 
         }
         res.json({...addReviewResult,newTokens:req.newTokens})
-        return 
-        
+        sendReviewNotificationToAll(addReviewResult)
+        return  
     } catch (error) {
         console.log('Error at adding a review',error)
         res.status(404).send('an error occurred while adding review,try again')

@@ -9,8 +9,7 @@ const dbconfig:PoolOptions =
     user: process.env.AZURE_USERNAME,
     password: process.env.AZURE_PASSWORD,
     database: process.env.AZURE_DB,
-    port: 3306,
-    ssl: {ca: readFileSync("DigiCertGlobalRootCA.crt.pem")}
+    port: 3306
 };
 let connection:Pool
 try {
@@ -228,7 +227,7 @@ export async function findRecipeReviews(recipeId:string,region:string,number_of_
 }
 export async function addReview(review:Review){
     const [results]:any = await connection.query(`CALL ${review.region=='kenyan'?'add_kenyan_recipe_review(?,?,?)':'add_recipe_review(?,?,?)'}`,[review.reviewText,review.recipeId,review.reviewerId]);
-    const reviewStatus:{task:string}=results[0][0]
+    const reviewStatus:{task:string,reviewerName:string,reviewText:String,recipeId:string,createdAt:Date}=results[0][0]
     return reviewStatus
 }
 export async function addRating(rating:Rating){

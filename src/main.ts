@@ -3,7 +3,7 @@ import express from 'express'
 import passport from 'passport'
 import './auth/auth.js'
 import { createAuthTokens } from "./auth/AuthTokens.js";
-import { addFoodIntakeHandler, addRecipeIntakeHandler, addRecipeRatingHandler, addRecipeReviewHandler, addUsernameForOauthHandler, checkAuthentication, getReviewsHandler, getUserFoodIntakeHandler, getUserRatingsHandler, getUserRecipeIntakeHandler, getUserReviewsHandler, loginRouteHandler, registerRouteHandler,fetchPaginatedRecipesHandler, searchRecipesHandler, searchFoodsHandler, fetchRecipesByDietTypeHandler,addUserPreferenceHandler,updateUserPreferenceHandler } from "./RouteHandlers/routesHandler.js";
+import { addFoodIntakeHandler, addRecipeIntakeHandler, addRecipeRatingHandler, addRecipeReviewHandler, addUsernameForOauthHandler, checkAuthentication, getReviewsHandler, getUserFoodIntakeHandler, getUserRatingsHandler, getUserRecipeIntakeHandler, getUserReviewsHandler, loginRouteHandler, registerRouteHandler,fetchPaginatedRecipesHandler, searchRecipesHandler, searchFoodsHandler, fetchRecipesByDietTypeHandler,addUserPreferenceHandler,updateUserPreferenceHandler, reviewsStreamHandler } from "./RouteHandlers/routesHandler.js";
 import dotenv from 'dotenv'
 dotenv.config()
 
@@ -67,6 +67,7 @@ app.post('/searchRecipes',checkAuthentication,searchRecipesHandler)
 app.post('/searchFoods',checkAuthentication,searchFoodsHandler)
 app.post('/addUserPreference', checkAuthentication, addUserPreferenceHandler);
 app.post('/updateUserPreference', checkAuthentication, updateUserPreferenceHandler);
+app.get('/reviewsEvent',reviewsStreamHandler)
 
 
 app.get('/failure', (_req, res) => {
