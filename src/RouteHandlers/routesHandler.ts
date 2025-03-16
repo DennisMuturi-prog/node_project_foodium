@@ -195,25 +195,25 @@ export const getUserRecipeIntakeHandler:RequestHandler=async (req,res)=>{
         return
     }
     try {
-        if(getUserRecipeIntakeInfo.next){
+        if(getUserRecipeIntakeInfo.next!="first page"){
             const results=await findUserRecipeIntake(req.userId,getUserRecipeIntakeInfo.region,getUserRecipeIntakeInfo.next)
             if(results.length>0){
-                res.json({results,next:results[results.length-1]['uuid'],newTokens:req.newTokens})
+                res.json({results,previous:getUserRecipeIntakeInfo.next,next:results[results.length-1]['uuid'],newTokens:req.newTokens})
                 return 
             }
             else{
-                res.send('no user recipe intake available')
+                res.status(404).send('no user recipe intake available')
                 return 
             }
         }
         else{
             const results=await findUserRecipeIntake(req.userId,getUserRecipeIntakeInfo.region)
             if(results.length>0){
-                res.json({results,next:results[results.length-1]['uuid'],newTokens:req.newTokens})
+                res.json({results,previous:'first page',next:results[results.length-1]['uuid'],newTokens:req.newTokens})
                 return 
             }
             else{
-                res.send('no user recipe intake available')
+                res.status(404).send('no user recipe intake available')
                 return 
             }
         }
@@ -270,7 +270,7 @@ export const getUserRatingsHandler:RequestHandler=async (req,res)=>{
                 return 
             }
             else{
-                res.send('no user ratings available')
+                res.status(404).send('no user ratings available')
                 return 
             }
         }
@@ -367,32 +367,32 @@ export const getReviewsHandler:RequestHandler=async (req,res)=>{
         return 
     }
     try {
-        if(getReviewsInfo.numberOfResults&&getReviewsInfo.next){
+        if(getReviewsInfo.numberOfResults&&getReviewsInfo.next!='first page'){
             const reviews=await findRecipeReviews(getReviewsInfo.recipeId,getReviewsInfo.region,getReviewsInfo.numberOfResults,getReviewsInfo.next)
             if(reviews.length>0){
-                res.json({results:reviews,next:reviews[reviews.length-1]['uuid'],newTokens:req.newTokens})
+                res.json({results:reviews,previous:getReviewsInfo.next,next:reviews[reviews.length-1]['uuid'],newTokens:req.newTokens})
                 return 
             }
             else{
-                res.send('no reviews available')
+                res.status(404).send('no reviews available')
                 return 
             }
         }
-        else if(getReviewsInfo.numberOfResults&&!getReviewsInfo.next){
+        else if(getReviewsInfo.numberOfResults&&getReviewsInfo.next=='first page'){
             const reviews=await findRecipeReviews(getReviewsInfo.recipeId,getReviewsInfo.region,getReviewsInfo.numberOfResults)
             if(reviews.length>0){
-                res.json({results:reviews,next:reviews[reviews.length-1]['uuid'],newTokens:req.newTokens})
+                res.json({results:reviews,previous:'first page',next:reviews[reviews.length-1]['uuid'],newTokens:req.newTokens})
                 return 
             }
             else{
-                res.send('no reviews available')
+                res.status(404).send('no reviews available')
                 return 
             }
         }
-        else if(!getReviewsInfo.numberOfResults&&getReviewsInfo.next){
+        else if(!getReviewsInfo.numberOfResults&&getReviewsInfo.next!='first page'){
             const reviews=await findRecipeReviews(getReviewsInfo.recipeId,getReviewsInfo.region,5,getReviewsInfo.next)
             if(reviews.length>0){
-                res.json({results:reviews,next:reviews[reviews.length-1]['uuid'],newTokens:req.newTokens})
+                res.json({results:reviews,previous:getReviewsInfo.next,next:reviews[reviews.length-1]['uuid'],newTokens:req.newTokens})
                 return 
             }
             else{

@@ -217,7 +217,7 @@ export async function findUserRatings(userId:string,region:string,next?:string){
 }
 export async function findRecipeReviews(recipeId:string,region:string,number_of_results?:number,next?:string){
     if(next){
-        const [results]:any=await connection.query(`CALL ${region=='kenyan'?'get_paginated_kenyan_recipe_reiews(?,?,?)':'get_paginated_reviews(?,?,?)'}`,[recipeId,number_of_results,next])
+        const [results]:any=await connection.query(`CALL ${region=='kenyan'?'get_paginated_kenyan_recipe_reviews(?,?,?)':'get_paginated_reviews(?,?,?)'}`,[recipeId,number_of_results,next])
         return results[0]
     }
     else{
