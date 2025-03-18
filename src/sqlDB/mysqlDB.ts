@@ -125,6 +125,8 @@ export interface Recipe {
     Vitamin_D_D2_and_D3: number;
     Vitamin_D4: number;
     image_url: string;
+    created_at: string;
+    recipe_uuid: string;
 }
 export interface KenyanRecipe {
     uuid: string;
@@ -150,6 +152,8 @@ export interface KenyanRecipe {
     parsedIngredientsList: string;
     no_of_ratings: number;
     recipe_rating: number;
+    created_at: string;
+    recipe_uuid: string;
   }
 export interface Review{
     reviewText:string;
@@ -171,6 +175,14 @@ export interface RecipeIntake{
 export interface foodIntake{
     userId:string
     foodId:string
+}
+export interface KenyanRecipeIntake extends KenyanRecipe {
+    created_at: string;
+    recipe_uuid: string;
+}
+export interface WorldRecipeIntake extends KenyanRecipe {
+    created_at: string;
+    recipe_uuid: string;
 }
 export async function searchFoods(searchTerm:string){
     const [results]:any=await connection.query(`CALL search_foods(?)`,[searchTerm])
@@ -308,7 +320,7 @@ export async function getRecipesByDietType(dietType: string, noOfMeals: number, 
 // console.log('results..',result)
 export async function findUserRecipeIntake(userId:string,region:string,next?:string){
     if(next){
-        const [results]:any=await connection.query(`CALL ${region=='kenyan'?'get_user_paginated_kenyan_recipe_intake(?,?)':'get_user_paginated_recipe_intake(?,?)'}`,[userId,next])
+        const [results]:any=await connection.query(`CALL ${region=='kenyan'?'get_user_paginated_kenyan_recipe_intake(?,?)':'get_user_paginated_recipe_intake(?,?)'}`,[userId,new Date(next)])
         if(region=='worldwide'){
             return parseRecipes(results[0] as Recipe[])
         }

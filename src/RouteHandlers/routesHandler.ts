@@ -191,14 +191,14 @@ export const searchRecipesHandler:RequestHandler=async (req,res)=>{
 export const getUserRecipeIntakeHandler:RequestHandler=async (req,res)=>{
     const getUserRecipeIntakeInfo=<getUserRatingsBody>req.body
     if(!getUserRecipeIntakeInfo.region){
-        res.status(404).send('provide region of recipes') 
+        res.status(404).send('provide region of recipes please') 
         return
     }
     try {
         if(getUserRecipeIntakeInfo.next!="first page"){
             const results=await findUserRecipeIntake(req.userId,getUserRecipeIntakeInfo.region,getUserRecipeIntakeInfo.next)
             if(results.length>0){
-                res.json({results,previous:getUserRecipeIntakeInfo.next,next:results[results.length-1]['uuid'],newTokens:req.newTokens})
+                res.json({results:results,previous:getUserRecipeIntakeInfo.next,next:results[results.length-1]['created_at'],newTokens:req.newTokens})
                 return 
             }
             else{
@@ -209,7 +209,7 @@ export const getUserRecipeIntakeHandler:RequestHandler=async (req,res)=>{
         else{
             const results=await findUserRecipeIntake(req.userId,getUserRecipeIntakeInfo.region)
             if(results.length>0){
-                res.json({results,previous:'first page',next:results[results.length-1]['uuid'],newTokens:req.newTokens})
+                res.json({results:results,previous:"first page",next:results[results.length-1]['created_at'],newTokens:req.newTokens})
                 return 
             }
             else{
