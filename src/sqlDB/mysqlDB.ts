@@ -353,3 +353,14 @@ export async function findUserFoodIntake(userId:string,next?:string){
      
     }   
 }
+
+export async function getUserRecipeIntakeByDateRange(userId:string,region:string,date1:string,date2:string){
+    const [results]:any=await connection.query(`CALL ${region=='kenyan'?'get_user_kenyan_recipe_intake_by_date_range(?,?,?)':'get_user_recipe_intake_by_date_range(?,?,?)'}`,[userId,new Date(date1),new Date(date2)])
+    if(region=='worldwide'){
+        return parseRecipes(results[0] as Recipe[])
+    }
+    else{
+        return parseKenyanRecipes(results[0] as KenyanRecipe[])
+
+    }
+}

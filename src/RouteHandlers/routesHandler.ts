@@ -2,7 +2,7 @@
 import {RequestHandler,Response} from 'express'
 import { checkAccessToken,checkRefreshToken, createAuthTokens } from "../auth/AuthTokens.js";
 import bcrypt from "bcrypt";
-import { addFoodIntake,findUserReviews ,findUserRatings,findUserRecipeIntake, addRating, addRecipeIntake, addReview, checkIfPasswordUserExists, checkUsernameAvailability, findRecipeReviews, findUserFoodIntake, getPaginatedRecipes, Rating, registerPasswordUser, Review, updateOauthUserUsername, searchFoods, searchRecipes, getRecipesByDietType,addUserPreference,updateUserPreference } from "../sqlDB/mysqlDB.js";
+import { addFoodIntake,findUserReviews ,findUserRatings,findUserRecipeIntake, addRating, addRecipeIntake, addReview, checkIfPasswordUserExists, checkUsernameAvailability, findRecipeReviews, findUserFoodIntake, getPaginatedRecipes, Rating, registerPasswordUser, Review, updateOauthUserUsername, searchFoods, searchRecipes, getRecipesByDietType,addUserPreference,updateUserPreference, getUserRecipeIntakeByDateRange } from "../sqlDB/mysqlDB.js";
 
 interface CheckAuthRequestBody{
     accessToken:string;
@@ -94,6 +94,11 @@ type addedReview={
     reviewText:String,
     recipeId:string,    
     createdAt:Date
+}
+interface IntakeByDateBody{
+    region:string;
+    date1:string;
+    date2:string;
 }
 
 let activeClients:Client[]=[]
@@ -202,7 +207,7 @@ export const getUserRecipeIntakeHandler:RequestHandler=async (req,res)=>{
                 return 
             }
             else{
-                res.status(404).send('no user recipe intake available')
+                res.status(404).send({message:'no user recipe intake available'})
                 return 
             }
         }
@@ -213,13 +218,40 @@ export const getUserRecipeIntakeHandler:RequestHandler=async (req,res)=>{
                 return 
             }
             else{
-                res.status(404).send('no user recipe intake available')
+                res.status(404).send({message:'no user recipe intake available'})
                 return 
             }
         }
         
     } catch (error) {
         console.log('error at get user recipe intake',error)
+        res.status(404).send('an error occurred while retrieving user recipe intake,try again')
+        return   
+    }
+}
+export const getUserRecipeIntakeByDateHandler:RequestHandler=async (req,res)=>{
+    const userRecipeIntakeByDateInfo=<IntakeByDateBody>req.body
+    if(!userRecipeIntakeByDateInfo.region){ 
+        res.status(404).send('provide region of recipes') 
+        return
+    }
+    if(!userRecipeIntakeByDateInfo.date1||!userRecipeIntakeByDateInfo.date2){
+        res.status(404).send('provide both dates') 
+        return
+    }
+    try {
+        const results=await getUserRecipeIntakeByDateRange(req.userId,userRecipeIntakeByDateInfo.region,userRecipeIntakeByDateInfo.date1,userRecipeIntakeByDateInfo.date2)
+        if(results.length>0){
+            res.json({results:results,newTokens:req.newTokens})
+            return 
+        }
+        else{
+            res.status(404).send('no user recipe intake on that date available')
+            return 
+        }
+        
+    } catch (error) {
+        console.log('error at get user recipe intake by date',error)
         res.status(404).send('an error occurred while retrieving user recipe intake,try again')
         return   
     }

@@ -3,7 +3,7 @@ import express from 'express'
 import passport from 'passport'
 import './auth/auth.js'
 import { createAuthTokens } from "./auth/AuthTokens.js";
-import { addFoodIntakeHandler, addRecipeIntakeHandler, addRecipeRatingHandler, addRecipeReviewHandler, addUsernameForOauthHandler, checkAuthentication, getReviewsHandler, getUserFoodIntakeHandler, getUserRatingsHandler, getUserRecipeIntakeHandler, getUserReviewsHandler, loginRouteHandler, registerRouteHandler,fetchPaginatedRecipesHandler, searchRecipesHandler, searchFoodsHandler, fetchRecipesByDietTypeHandler,addUserPreferenceHandler,updateUserPreferenceHandler, reviewsStreamHandler } from "./RouteHandlers/routesHandler.js";
+import { addFoodIntakeHandler, addRecipeIntakeHandler, addRecipeRatingHandler, addRecipeReviewHandler, addUsernameForOauthHandler, checkAuthentication, getReviewsHandler, getUserFoodIntakeHandler, getUserRatingsHandler, getUserRecipeIntakeHandler, getUserReviewsHandler, loginRouteHandler, registerRouteHandler,fetchPaginatedRecipesHandler, searchRecipesHandler, searchFoodsHandler, fetchRecipesByDietTypeHandler,addUserPreferenceHandler,updateUserPreferenceHandler, reviewsStreamHandler, getUserRecipeIntakeByDateHandler } from "./RouteHandlers/routesHandler.js";
 import dotenv from 'dotenv'
 dotenv.config()
 
@@ -62,6 +62,7 @@ app.post('/addFoodIntake',checkAuthentication,addFoodIntakeHandler)
 app.post('/getUserReviews',checkAuthentication,getUserReviewsHandler)
 app.post('/getUserRatings',checkAuthentication,getUserRatingsHandler)
 app.post('/getUserRecipeIntake',checkAuthentication,getUserRecipeIntakeHandler)
+app.post('/getUserRecipeIntakeByDate',checkAuthentication,getUserRecipeIntakeByDateHandler)
 app.post('/getUserFoodIntake',checkAuthentication,getUserFoodIntakeHandler)
 app.post('/searchRecipes',checkAuthentication,searchRecipesHandler)
 app.post('/searchFoods',checkAuthentication,searchFoodsHandler)
