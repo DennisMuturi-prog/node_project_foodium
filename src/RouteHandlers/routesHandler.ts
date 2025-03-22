@@ -246,6 +246,7 @@ export const getUserRecipeIntakeByDateHandler:RequestHandler=async (req,res)=>{
             return 
         }
         else{
+            // res.json({results:results,newTokens:req.newTokens})
             res.status(404).send('no user recipe intake on that date available')
             return 
         }
